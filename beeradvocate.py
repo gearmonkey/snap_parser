@@ -18,29 +18,38 @@ for line in rh:
     if line == '\n':
         if current_id != None:
             if current_id in beers.keys():
-                beers[current_id][ratings].append(this_beer[ratings])
-                beers[current_id][mean_rating] = sum(beers[current_id][ratings])/ \
-                                                  float(len(beers[current_id][ratings]))
+                beers[current_id]['ratings'].append(this_beer['ratings'])
+                beers[current_id]['mean_rating'] = sum(beers[current_id]['ratings'])/ \
+                                                  float(len(beers[current_id]['ratings']))
                 print 'new rating for', this_beer['name']
             else:
+                current_id = '{0}/{1}'.format(this_beer['brewerID'],this_beer['beerID'])
                 beers[current_id] = this_beer
-                beers[current_id][mean_rating] = beers[current_id][ratings]
+                beers[current_id]['mean_rating'] = beers[current_id]['ratings']
                 print 'added', this_beer['name']
                 
         current_id = None
         this_beer = {}
         continue
-    key, value = line.strip().split(': ')
+    try:
+        key, value = [x.strip() for x in line.split(': ', 1)]
+    except:
+        print repr(line), '--unable to split--'
+        raise
     toplabel, sublabel = key.split('/')
-    if toplabel == 'beer'
+    if toplabel == 'beer':
         if sublabel == 'name':
             this_beer['name'] = value
-        elif sublabel == 'beerID':
+        elif sublabel == 'beerId':
             this_beer['beerID'] = int(value)
+            current_id = value
         elif sublabel == 'brewerId':
             this_beer['brewerID'] = int(value)
         elif sublabel == 'ABV':
-            this_beer['ABV'] = float(value)
+            try:
+                this_beer['ABV'] = float(value)
+            except ValueError:
+                this_beer['ABV'] = None
         elif sublabel == 'style':
             this_beer['style'] = value
     elif toplabel == 'review':
